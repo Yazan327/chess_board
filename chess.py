@@ -23,29 +23,29 @@ def rook_right_move(pos1,pos2):
         
         return any([pos1[0]==pos2[0],pos1[1]==pos2[1]])
     
-def rook_can_move(pos1,pos2,army)   :          
+def rook_can_move(pos1,pos2,army,army1)   :          
         if pos2 in army.keys():
             return False
         elif pos2[1]>pos1[1]:
 
-            for i in range(pos1[1]+1,pos2[1]+1):
-                if (pos1[0],i)in army.keys():
+            for i in range(pos1[1]+1,pos2[1]):
+                if (pos1[0],i)in army.keys() or (pos1[0],i)in army1.keys():
                     return False
             return True
             
         elif pos2[1]<pos1[1]:
-            for i in range(pos1[1]-1,pos2[1]-1,-1):
-                if (pos1[0],i)in army.keys():
+            for i in range(pos1[1]-1,pos2[1],-1):
+                if (pos1[0],i)in army.keys() or (pos1[0],i)in army1.keys():
                     return False
             return True
         elif pos2[0]<pos1[0]:
-            for i in range(pos1[0]-1,pos2[0]-1):
-                if (i,pos1[1])in army.keys():
+            for i in range(pos1[0]-1,pos2[0]):
+                if (i,pos1[1])in army.keys() or (i,pos1[1])in army1.keys():
                     return False
             return True
         else :
-            for i in range(pos1[0]+1,pos2[0]+1):
-                if (i,pos1[1])in army.keys():
+            for i in range(pos1[0]+1,pos2[0]):
+                if (i,pos1[1])in army.keys() or (i,pos1[1])in army1.keys():
                     return False
             return True
 
@@ -58,10 +58,10 @@ def Bishop_ther_are_movse(pos1,army):
     x=pos1[0]
     y=pos1[1]
     return any([
-        (x-1,y+1) not in army.keys(),
-        (x+1,y+1) not in army.keys(),
-        (x-1,y-1) not in army.keys(),
-        (x-1,y-1) not in army.keys()
+        (x-1,y+1) not in army.keys() and inbord((x-1,y+1)),
+        (x+1,y+1) not in army.keys() and inbord((x+1,y+1)),
+        (x-1,y-1) not in army.keys() and inbord((x-1,y-1)),
+        (x-1,y-1) not in army.keys() and inbord((x-1,y-1))
 
     ])
 
@@ -100,11 +100,12 @@ def Bishop_can_move(pos1,pos2,army,army1):
             y-=1
             if (x,y)==(x2,y2):
                 return True
-            elif any([
-                (x,y) in army.keys(),
-                (x,y) in army1.keys()
-                ]):
-                return False
+            else:
+                if any([
+                 (x,y) in army.keys(),
+                 (x,y) in army1.keys()
+                 ]):
+                 return False
         return True
     elif y2>y1 and y2+x2 == y1 +x1:
         x=x1
@@ -213,17 +214,122 @@ def Knight_can_move(pos1,pos2,army):
 
 #Queen Sets 
 def Queen_ther_are_movse(pos1,army):
-    pass
+    x=pos1[0]
+    y=pos1[1]
+    return any([
+        (x-1,y+1) not in army.keys(),
+        (x+1,y+1) not in army.keys(),
+        (x-1,y-1) not in army.keys(),
+        (x-1,y-1) not in army.keys(),
+        all([(pos1[0]-1,pos1[1]) not in army.keys() , 0<(pos1[0]-1)<=8]), 
+        all([ (pos1[0]+1,pos1[1]) not in army.keys() , 0<(pos1[0]+1)<=8]),
+        all([ (pos1[0],pos1[1]-1) not in army.keys() , 0<(pos1[1]-1)<=8]),
+        all([(pos1[0],pos1[1]+1) not in army.keys() , 0<(pos1[1]+1)<=8])
+    ])
+
 
 def Queen_right_move(pos1,pos2) ->tuple:
     x1=pos1[0]
     y1=pos1[1]
     x2=pos2[0]
-    y2=pos1[1]
-    return any([pos1[0]==pos2[0],pos1[1]==pos2[1],x1-y1==x2-y2,x1+y1==x2+y2])
+    y2=pos2[1]
+    return any([
+        pos1[0]==pos2[0],
+        pos1[1]==pos2[1],
+        y1-x1==y2-x2,
+        x1+y1==x2+y2
 
-def Queen_can_move(pos1,pos2,army):
-    pass
+        ])
+
+def Queen_can_move(pos1,pos2,army,army1):
+        x1=pos1[0]
+        y1=pos1[1]
+        x2=pos2[0]
+        y2=pos2[1]
+        if pos2 in army.keys():
+            return False
+
+        elif y2<y1 and y2-x2 == y1 -x1:
+            x=x1
+            y=y1
+            while x>x2 and y>y2:
+                x-=1
+                y-=1
+                if (x,y)==(x2,y2):
+                    return True
+                elif any([
+                    (x,y) in army.keys(),
+                    (x,y) in army1.keys()
+                    ]):
+                    return False
+            return True
+        elif y2<y1 and y2+x2 == y1 +x1:
+            x=x1
+            y=y1
+            while x<x2 and y>y2:
+                x+=1
+                y-=1
+                if (x,y)==(x2,y2):
+                    return True
+                else:
+                    if any([
+                    (x,y) in army.keys(),
+                    (x,y) in army1.keys()
+                    ]):
+                     return False
+            return True
+        elif y2>y1 and y2+x2 == y1 +x1:
+            x=x1
+            y=y1
+            while x>x2 and y<y2:
+                x-=1
+                y+=1
+                if (x,y)==(x2,y2):
+                    return True
+                elif any([
+                    (x,y) in army.keys(),
+                    (x,y) in army1.keys()
+                    ]):
+                    return False
+            return True
+        elif y2>y1 and y2-x2 == y1 -x1:
+            x=x1
+            y=y1
+            while x<x2 and y<y2:
+                x+=1
+                y+=1
+                if (x,y)==(x2,y2):
+                    return True
+                elif any([
+                    (x,y) in army.keys(),
+                    (x,y) in army1.keys()
+                    ]):
+                    return False
+            return True
+        elif pos2[1]>pos1[1]:
+
+            for i in range(pos1[1]+1,pos2[1]):
+                if (pos1[0],i)in army.keys() or (pos1[0],i)in army1.keys():
+                    return False
+            return True
+            
+        elif pos2[1]<pos1[1]:
+            for i in range(pos1[1]-1,pos2[1],-1):
+                if (pos1[0],i)in army.keys() or (pos1[0],i)in army1.keys():
+                    return False
+            return True
+        elif pos2[0]<pos1[0]:
+            for i in range(pos1[0]-1,pos2[0]):
+                if (i,pos1[1])in army.keys() or (i,pos1[1])in army1.keys():
+                    return False
+            return True
+        elif pos2[0]>pos1[0]:
+            for i in range(pos1[0]+1,pos2[0]):
+                if (i,pos1[1])in army.keys() or (i,pos1[1])in army1.keys():
+                    return False
+            return True
+        else:
+            return False
 
 
 #King Sets
@@ -419,7 +525,7 @@ while True:
                                 print("The location Out The Borde,try again")
 
                         if rook_right_move(pos1,pos2):
-                            if rook_can_move(pos1,pos2,blackposation):
+                            if rook_can_move(pos1,pos2,blackposation,whiteposation):
                                 black_army[blackposation[pos1]]['posatios']=pos2
                                 if pos2 in whiteposation.keys():
                                     white_army[whiteposation[pos2]]['active']=False
@@ -494,7 +600,33 @@ while True:
                 elif soljer[0:6]=='Knight':
                     pass
                 elif soljer=='Queen':
-                    pass
+                    if Queen_ther_are_movse(pos1,blackposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+
+                        if Queen_right_move(pos1,pos2):
+                            if Queen_can_move(pos1,pos2,blackposation,whiteposation):
+                                black_army[blackposation[pos1]]['posatios']=pos2
+                                if pos2 in whiteposation.keys():
+                                    white_army[whiteposation[pos2]]['active']=False
+                                    white_out.append(whiteposation[pos2])
+                                round=0
+                                break
+                            else:
+                                print("Wrong Move ,Try Again")    
+                                  
+                        else:
+                            print("Wrong Move for The Queen ")
+
+                    else:
+                       print("there are no movse")
                 else:
                     pass # king
             elif pos1 in whiteposation.keys():
@@ -536,7 +668,7 @@ while True:
                                 print("The location Out The Borde,try again")
 
                         if rook_right_move(pos1,pos2):
-                            if rook_can_move(pos1,pos2,whiteposation):
+                            if rook_can_move(pos1,pos2,whiteposation,blackposation):
                                 black_army[whiteposation[pos1]]['posatios']=pos2
                                 if pos2 in blackposation.keys():
                                     black_army[blackposation[pos2]]['active']=False
@@ -611,11 +743,37 @@ while True:
                 elif soljer[0:6]=='Knight':
                     pass
                 elif soljer=='Queen':
-                    pass
+                    if Queen_ther_are_movse(pos1,whiteposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+
+                        if Queen_right_move(pos1,pos2):
+                            if Queen_can_move(pos1,pos2,whiteposation,blackposation):
+                                white_army[whiteposation[pos1]]['posatios']=pos2
+                                if pos2 in whiteposation.keys():
+                                    black_army[blackposation[pos2]]['active']=False
+                                    black_out.append(blackposation[pos2])
+                                round=1
+                                break
+                            else:
+                                print("Wrong Move ,Try Again")    
+                                  
+                        else:
+                            print("Wrong Move for The Queen ")
+
+                    else:
+                       print("there are no movse")
                 else:
                     pass # king
-            elif pos1 in whiteposation.keys():
-                print("You cannot move white pieces")
+            elif pos1 in blackposation.keys():
+                print("You cannot move black pieces")
             else:
                 print("There Is No Pieces In This Place ")
           
