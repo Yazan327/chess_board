@@ -194,12 +194,27 @@ def pawn_can_move(pos1,pos2,black,army,army1):
 
 #Knight Sets
 def Knight_ther_are_movse(pos1,army):
-    pass
+    x=pos1[0]
+    y=pos1[1]
+
+    return any([
+        (x+1,y+2) not in army.keys() and inbord((x+1,y+2)),
+        (x-1,y+2) not in army.keys() and inbord((x-1,y+2)),
+        (x-1,y-2) not in army.keys() and inbord((x-1,y-2)),
+        (x+1,y-2) not in army.keys() and inbord((x+1,y-2)),
+        (x-2,y+1) not in army.keys() and inbord((x-2,y+1)),
+        (x-2,y-1) not in army.keys() and inbord((x-2,y-1)),
+        (x+2,y-1) not in army.keys() and inbord((x+2,y-1)),
+        (x+2,y+1) not in army.keys() and inbord((x+2,y+1))
+
+
+             ])
+
 def Knight_right_move(pos1,pos2) ->tuple:
     x1=pos1[0]
     y1=pos1[1]
     x2=pos2[0]
-    y2=pos1[1]
+    y2=pos2[1]
     return any([
         y2==y1+2 and any([x2==x1+1,x2==x1-1]),
         y2==y1-2 and any([x2==x1+1,x2==x1-1]),
@@ -208,8 +223,8 @@ def Knight_right_move(pos1,pos2) ->tuple:
 
 
              ])
-def Knight_can_move(pos1,pos2,army):
-    pass
+
+    
 
 
 #Queen Sets 
@@ -598,7 +613,33 @@ while True:
                     else:
                        print("there are no movse") 
                 elif soljer[0:6]=='Knight':
-                    pass
+                    if Knight_ther_are_movse(pos1,blackposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+
+                        if Knight_right_move(pos1,pos2):
+                            
+                            black_army[blackposation[pos1]]['posatios']=pos2
+                            if pos2 in whiteposation.keys():
+                                white_army[whiteposation[pos2]]['active']=False
+                                white_out.append(whiteposation[pos2])
+                            round=0
+                            break
+                             
+                            
+                        
+                           
+                        else:
+                            print("Wrong Move for The Knight ")
+                    else:
+                       print("there are no movse") 
                 elif soljer=='Queen':
                     if Queen_ther_are_movse(pos1,blackposation) :
                        
@@ -669,7 +710,7 @@ while True:
 
                         if rook_right_move(pos1,pos2):
                             if rook_can_move(pos1,pos2,whiteposation,blackposation):
-                                black_army[whiteposation[pos1]]['posatios']=pos2
+                                white_army[whiteposation[pos1]]['posatios']=pos2
                                 if pos2 in blackposation.keys():
                                     black_army[blackposation[pos2]]['active']=False
                                     black_out.append(blackposation[pos2])
@@ -741,7 +782,33 @@ while True:
                     else:
                        print("there are no movse") 
                 elif soljer[0:6]=='Knight':
-                    pass
+                    if Knight_ther_are_movse(pos1,whiteposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+                        
+                        if Knight_right_move(pos1,pos2):
+                            
+                            white_army[whiteposation[pos1]]['posatios']=pos2
+                            if pos2 in blackposation.keys():
+                                black_army[blackposation[pos2]]['active']=False
+                                black_out.append(blackposation[pos2])
+                            round=1
+                            break
+                             
+                            
+                        
+                           
+                        else:
+                            print("Wrong Move for The Knight ")
+                    else:
+                       print("there are no movse") 
                 elif soljer=='Queen':
                     if Queen_ther_are_movse(pos1,whiteposation) :
                        
