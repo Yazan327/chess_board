@@ -179,15 +179,15 @@ def pawn_can_move(pos1,pos2,black,army,army1):
     
     if black:
         return any([
-              pos2[1]==pos1[1]-2 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]-1) not in army.keys() and(pos1[0],pos1[1]-1) not in army1.keys(),
-              pos2[1]==pos1[1]-1 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]-1) not in army.keys(),
+              pos2[1]==pos1[1]-2 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]-1) not in army.keys() and(pos1[0],pos1[1]-1) not in army1.keys() and pos2 not in army.keys() and pos2 not in army1.keys(),
+              pos2[1]==pos1[1]-1 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]-1) not in army.keys() and pos2 not in army.keys()and pos2 not in army1.keys(),
               pos2[0]==pos1[0]-1 and pos2[1]==pos1[1]-1 and (pos1[0]-1,pos1[1]-1) in army1.keys() ,
               pos2[0]==pos1[0]+1 and pos2[1]==pos1[1]-1 and (pos1[0]+1,pos1[1]-1) in army1.keys()          
         ])
     else:
         return any([
-              pos2[1]==pos1[1]+2 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]+1) not in army.keys() and(pos1[0],pos1[1]+1) not in army1.keys(),
-              pos2[1]==pos1[1]+1 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]+1) not in army.keys(),
+              pos2[1]==pos1[1]+2 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]+1) not in army.keys() and(pos1[0],pos1[1]+1) not in army1.keys() and pos2 not in army.keys() and pos2 not in army1.keys(),
+              pos2[1]==pos1[1]+1 and pos2[0]==pos1[0]   and (pos1[0],pos1[1]+1) not in army.keys() and pos2 not in army.keys() and pos2 not in army1.keys(),
               pos2[0]==pos1[0]-1 and pos2[1]==pos1[1]+1 and (pos1[0]-1,pos1[1]+1) in army1.keys() ,
               pos2[0]==pos1[0]+1 and pos2[1]==pos1[1]+1 and (pos1[0]+1,pos1[1]+1) in army1.keys()          
         ])
@@ -349,12 +349,25 @@ def Queen_can_move(pos1,pos2,army,army1):
 
 #King Sets
 def King_ther_are_movse(pos1,army):
-    pass
+    x=pos1[0]
+    y=pos1[1]
+    return any([
+        (x-1,y+1)not in army.keys() and inbord((x-1,y+1)),
+        (x+1,y+1)not in army.keys() and inbord((x+1,y+1)),
+        (x-1,y-1)not in army.keys() and inbord((x-1,y-1)),
+        (x+1,y-1)not in army.keys() and inbord((x+1,y-1)),
+        (x,y-1)not in army.keys() and inbord((x+1,y-1)),
+        (x,y+1)not in army.keys() and inbord((x+1,y+1)),
+        (x-1,y)not in army.keys() and inbord((x-1,y)),
+        (x+1,y)not in army.keys() and inbord((x+1,y))
+  
+
+    ])
 def King_right_move(pos1,pos2) ->tuple:
     x1=pos1[0]
     y1=pos1[1]
     x2=pos2[0]
-    y2=pos1[1]
+    y2=pos2[1]
     return any([x2==x1-1 and y2==y1+1,
                 x2== x1+1 and y2==y1+1,
                 x2==x1-1 and y2==y1-1,
@@ -362,14 +375,42 @@ def King_right_move(pos1,pos2) ->tuple:
                 x2==x1 and any([y2-y1==1,y1-y2==1]),
                 y2==y1 and any([x2-x1==1,x1-x2==1])
                 ])
-def King_can_move(pos1,pos2,army):
-    pass
+def King_can_move(pos2,army):
+    if pos2 in army.keys():
+        return False
+    else:
+        return True
 
+def king_freeToMove(pos2,army,army1,black):
+    for location ,soljer  in army1.items():
+        if soljer[0:4]=='rook':
+            if rook_right_move(location,pos2):
+                if rook_can_move(location,pos2,army1,army):
+                    return False
+            
+        elif soljer[0:6]=='Bishop':    
+            if Bishop_right_move(location,pos2):
+                if Bishop_can_move(location,pos2,army1,army):
+                    return False
+        elif soljer[0:6]=='Knight':    
+            if Knight_right_move(location,pos2):
+                
+                 return False
 
-
-
-
-
+        elif soljer=='Queen':    
+            if Queen_right_move(location,pos2):
+                if Queen_can_move(location,pos2,army1,army):
+                    return False
+        elif soljer=='king':
+            if King_right_move(location,pos2):
+                if King_can_move(location,pos2,army1):
+                    return False
+        else:
+            
+            
+            if pawn_right_move(location,pos2,1,black):
+                    return False                
+    return True
 
 white_army={
         'pawn1':{
@@ -669,7 +710,36 @@ while True:
                     else:
                        print("there are no movse")
                 else:
-                    pass # king
+                    if King_ther_are_movse(pos1,blackposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+
+                        if King_right_move(pos1,pos2):
+                            if King_can_move(pos2,blackposation):
+                                if king_freeToMove(pos2,blackposation,whiteposation,0):
+                                    black_army[blackposation[pos1]]['posatios']=pos2
+                                    if pos2 in whiteposation.keys():
+                                        white_army[whiteposation[pos2]]['active']=False
+                                        white_out.append(whiteposation[pos2])
+                                    round=0
+                                    break
+                                else:
+                                    print("Subscription patch")
+                            else:
+                                print("Wrong Move ,Try Again")    
+                                  
+                        else:
+                            print("Wrong Move for The king ")
+
+                    else:
+                       print("there are no movse")                    
             elif pos1 in whiteposation.keys():
                 print("You cannot move white pieces")
             else:
@@ -838,7 +908,33 @@ while True:
                     else:
                        print("there are no movse")
                 else:
-                    pass # king
+                    if King_ther_are_movse(pos1,whiteposation) :
+                       
+                       while True:
+                        print("Enter The New  Location ")
+                        while True:
+                            pos2=(int(input()),int(input()))
+                            if inbord(pos2):
+                                break
+                            else:
+                                print("The location Out The Borde,try again")
+
+                        if King_right_move(pos1,pos2):
+                            if King_can_move(pos2,whiteposation):
+                                if king_freeToMove(pos2,whiteposation,blackposation,1):
+                                    white_army[whiteposation[pos1]]['posatios']=pos2
+                                    if pos2 in blackposation.keys():
+                                        black_army[blackposation[pos2]]['active']=False
+                                        black_out.append(blackposation[pos2])
+                                    round=1
+                                    break
+                                else:
+                                    print("Subscription patch")
+                            else:
+                                print("Wrong Move ,Try Again")    
+                                  
+                        else:
+                            print("Wrong Move for The king ")
             elif pos1 in blackposation.keys():
                 print("You cannot move black pieces")
             else:
