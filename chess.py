@@ -638,7 +638,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                                    
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
@@ -672,7 +672,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                                    
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
@@ -707,7 +707,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                                
                             else:
                                  print("Wrong Move ,Try Again")    
                         
@@ -741,7 +741,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                         
                            
                         else:
                             print("Wrong Move for The Knight ")
@@ -771,8 +771,7 @@ while True:
                                     break
                                 else:
                                     print("king protecter")
-                                    
-                                    break
+                                
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
@@ -863,8 +862,7 @@ while True:
                                     break
                                 else:
                                     print("king protecter")
-                                    
-                                    break
+                              
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
@@ -897,8 +895,7 @@ while True:
                                     break
                                 else:
                                     print("king protecter")
-                                    
-                                    break
+                                  
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
@@ -932,7 +929,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                               
                                     
                             else:
                                  print("Wrong Move ,Try Again")    
@@ -966,8 +963,7 @@ while True:
                                     break
                                 else:
                                     print("king protecter")
-                                    
-                                    break
+                                
                         else:
                             print("Wrong Move for The Knight ")
                     else:
@@ -997,7 +993,7 @@ while True:
                                 else:
                                     print("king protecter")
                                     
-                                    break
+                                 
                             else:
                                 print("Wrong Move ,Try Again")    
                                   
