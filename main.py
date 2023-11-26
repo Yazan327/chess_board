@@ -149,14 +149,14 @@ def pawn_ther_are_movse(pos1,black,army,army1):
           
       (x1+1,y1-1) in army1.keys(),
       (x1-1,y1-1) in army1.keys(),
-      (x1,y1-1) not in army.keys()
+      (x1,y1-1) not in army.keys() and (x1,y1-1) not in army1.keys()
             ])
     else:
       return any([
           
       (x1+1,y1+1) in army1.keys(),
       (x1-1,y1+1) in army1.keys(),
-      (x1,y1+1) not in army.keys()
+      (x1,y1+1) not in army.keys() and (x1,y1+1) not in army1.keys()
             ])
 def pawn_right_move(pos1,pos2,movments,black) :
     if black:
@@ -381,7 +381,12 @@ def King_can_move(pos2,army):
     else:
         return True
 
-def king_freeToMove(pos2,army,army1,black):
+def king_freeToMove(pos1,pos2,army,army1,black):
+    """returns true if the king free to move"""
+    army2=army
+    
+    new_key = pos2
+    army2 = {new_key if k == pos1 else k: v for k, v in army.items()}  # need to study
     for location ,soljer  in army1.items():
         if soljer[0:4]=='rook':
             if rook_right_move(location,pos2):
@@ -407,15 +412,16 @@ def king_freeToMove(pos2,army,army1,black):
                     return False
         else:
             
-            
-            if pawn_right_move(location,pos2,1,black):
-                    return False                
+           
+            if pawn_can_move(location,pos2,black,army1,army2):
+                    
+                        return False                   
     return True
 
 
 #King's Protacter
 
-def King_protector(pos1,pos2,army,army1,black,king):
+def king_protected(pos1,pos2,army,army1,black,king):
     army2=army
     
     new_key = pos2
@@ -449,27 +455,51 @@ def King_protector(pos1,pos2,army,army1,black,king):
             
             
             if pawn_right_move(location,king,1,black):
-                    return False                
+                     return False                   
     return True
 
 def King_protector_allways(pos1,army,army1,black,king):
-        """returns true if any move of this solder maks the king unsafe"""
+        """returns true if all the movse of this solder maks the king unsafe"""
+        x=pos1[0]
+        y=pos1[1]
         solger=army[pos1]
 
         if solger[0:4]=='rook':
- 
+               
+               
+                for y1 in range(y+1,9):
+                    if (x,y1) not in army.keys() and king_protected(pos1,(x,y1),army,army1,black,king):
+                        return False
+                    
+                    if (x,y1) in army.keys() or (x,y1) in  army1.keys()  :
+                        break
 
-                if any([
-  
-                   all([(pos1[0]-1,pos1[1]) not in army.keys() , 0<(pos1[0]-1)<=8,King_protector(pos1,(pos1[0]-1,pos1[1]),army,army1,black,king)]), 
-                   all([ (pos1[0]+1,pos1[1]) not in army.keys() , 0<(pos1[0]+1)<=8,King_protector(pos1,(pos1[0]+1,pos1[1]),army,army1,black,king)]),
-                   all([ (pos1[0],pos1[1]-1) not in army.keys() , 0<(pos1[1]-1)<=8,King_protector(pos1,(pos1[0],pos1[1]-1),army,army1,black,king)]),
-                   all([(pos1[0],pos1[1]+1) not in army.keys() , 0<(pos1[1]+1)<=8,King_protector(pos1,(pos1[0]-1,pos1[1]+1),army,army1,black,king)])
-                    ]):
-    
-                    return False
-                else:
-                    return True
+
+                for y1 in range(y-1,0,-1):
+                    if (x,y1) not in army.keys() and king_protected(pos1,(x,y1),army,army1,black,king):
+                        return False
+                    
+                    if (x,y1) in army.keys() or (x,y1) in  army1.keys()  :
+                        break
+
+
+
+                for x1 in range(x+1,9):
+                    if (x1,y) not in army.keys() and king_protected(pos1,(x1,y),army,army1,black,king):
+                        return False
+                    
+                    if (x1,y) in army.keys() or (x1,y) in  army1.keys()  :
+                        break                    
+
+                for x1 in range(x-1,0,-1):
+                    if (x1,y) not in army.keys() and king_protected(pos1,(x1,y),army,army1,black,king):
+                        return False
+                    
+                    if (x1,y) in army.keys() or (x1,y) in  army1.keys()  :
+                        break                    
+                             
+            
+                return True
   
                     
      
@@ -478,30 +508,78 @@ def King_protector_allways(pos1,army,army1,black,king):
                   
                 x=pos1[0]
                 y=pos1[1]
+                x1=x
+                y1=y
+                while True:
+                    x1+=1
+                    y1+=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1>=8 or y1>=8:
+                        break
 
-                if any([
-                    (x-1,y+1) not in army.keys() and inbord((x-1,y+1)) and King_protector(pos1,(x-1,y+1),army,army1,black,king),
-                    (x+1,y+1) not in army.keys() and inbord((x+1,y+1))and King_protector(pos1,(x+1,y+1),army,army1,black,king),
-                    (x-1,y-1) not in army.keys() and inbord((x-1,y-1))and King_protector(pos1,(x-1,y-1),army,army1,black,king),
-                    (x+1,y-1) not in army.keys() and inbord((x-1,y-1)) and King_protector(pos1,(x+1,y-1),army,army1,black,king)
-                    ]):
-    
-                    return False
-                else:
-                    return True
+                x1=x
+                y1=y
+                while True:
+                    x1-=1
+                    y1-=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1<=8 or y1<=1:
+                        break                
+                x1=x
+                y1=y
+                while True:
+                    x1+=1
+                    y1-=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1>=8 or y1<=1:
+                        break                
+                x1=x
+                y1=y
+                while True:
+                    x1-=1
+                    y1+=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1<=1 or y1>=8:
+                        break                
+
+
+
+                return True
+                
+
         elif solger[0:6]=='Knight':    
                 x=pos1[0]
                 y=pos1[1]
 
                 if any([
-                    (x+1,y+2) not in army.keys() and inbord((x+1,y+2))and King_protector(pos1,(x+1,y+2),army,army1,black,king),
-                    (x-1,y+2) not in army.keys() and inbord((x-1,y+2))and King_protector(pos1,(x-1,y+2),army,army1,black,king),
-                    (x-1,y-2) not in army.keys() and inbord((x-1,y-2))and King_protector(pos1,(x-1,y-2),army,army1,black,king),
-                    (x+1,y-2) not in army.keys() and inbord((x+1,y-2))and King_protector(pos1,(x+1,y-2),army,army1,black,king),
-                    (x-2,y+1) not in army.keys() and inbord((x-2,y+1))and King_protector(pos1,(x-2,y+1),army,army1,black,king),
-                    (x-2,y-1) not in army.keys() and inbord((x-2,y-1))and King_protector(pos1,(x-2,y-1),army,army1,black,king),
-                    (x+2,y-1) not in army.keys() and inbord((x+2,y-1))and King_protector(pos1,(x+2,y-1),army,army1,black,king),
-                    (x+2,y+1) not in army.keys() and inbord((x+2,y+1))and King_protector(pos1,(x+2,y+1),army,army1,black,king)
+                    (x+1,y+2) not in army.keys() and inbord((x+1,y+2))and king_protected(pos1,(x+1,y+2),army,army1,black,king),
+                    (x-1,y+2) not in army.keys() and inbord((x-1,y+2))and king_protected(pos1,(x-1,y+2),army,army1,black,king),
+                    (x-1,y-2) not in army.keys() and inbord((x-1,y-2))and king_protected(pos1,(x-1,y-2),army,army1,black,king),
+                    (x+1,y-2) not in army.keys() and inbord((x+1,y-2))and king_protected(pos1,(x+1,y-2),army,army1,black,king),
+                    (x-2,y+1) not in army.keys() and inbord((x-2,y+1))and king_protected(pos1,(x-2,y+1),army,army1,black,king),
+                    (x-2,y-1) not in army.keys() and inbord((x-2,y-1))and king_protected(pos1,(x-2,y-1),army,army1,black,king),
+                    (x+2,y-1) not in army.keys() and inbord((x+2,y-1))and king_protected(pos1,(x+2,y-1),army,army1,black,king),
+                    (x+2,y+1) not in army.keys() and inbord((x+2,y+1))and king_protected(pos1,(x+2,y+1),army,army1,black,king)
 
 
                     ]):
@@ -513,21 +591,98 @@ def King_protector_allways(pos1,army,army1,black,king):
     
                 x=pos1[0]
                 y=pos1[1]
+                #take the rook sets
+                for y1 in range(y+1,9):
+                    if (x,y1) not in army.keys() and king_protected(pos1,(x,y1),army,army1,black,king):
+                        return False
+                    
+                    if (x,y1) in army.keys() or (x,y1) in  army1.keys()  :
+                        break
 
-                if any([
-                    (x-1,y+1) not in army.keys() and inbord((x-1,y+1)) and King_protector(pos1,(x-1,y+1),army,army1,black,king),
-                    (x+1,y+1) not in army.keys() and inbord((x+1,y+1))and King_protector(pos1,(x+1,y+1),army,army1,black,king),
-                    (x-1,y-1) not in army.keys() and inbord((x-1,y-1))and King_protector(pos1,(x-1,y-1),army,army1,black,king),
-                    (x+1,y-1) not in army.keys() and inbord((x-1,y-1)) and King_protector(pos1,(x+1,y-1),army,army1,black,king),
-                    all([(pos1[0]-1,pos1[1]) not in army.keys() , 0<(pos1[0]-1)<=8,King_protector(pos1,(pos1[0]-1,pos1[1]),army,army1,black,king)]), 
-                    all([ (pos1[0]+1,pos1[1]) not in army.keys() , 0<(pos1[0]+1)<=8,King_protector(pos1,(pos1[0]+1,pos1[1]),army,army1,black,king)]),
-                    all([ (pos1[0],pos1[1]-1) not in army.keys() , 0<(pos1[1]-1)<=8,King_protector(pos1,(pos1[0],pos1[1]-1),army,army1,black,king)]),
-                    all([(pos1[0],pos1[1]+1) not in army.keys() , 0<(pos1[1]+1)<=8,King_protector(pos1,(pos1[0],pos1[1]+1),army,army1,black,king)])
-                    ]):
-    
-                    return False
-                else:
-                    return True
+
+                for y1 in range(y-1,0,-1):
+                    if (x,y1) not in army.keys() and king_protected(pos1,(x,y1),army,army1,black,king):
+                        return False
+                    
+                    if (x,y1) in army.keys() or (x,y1) in  army1.keys()  :
+                        break
+
+
+
+                for x1 in range(x+1,9):
+                    if (x1,y) not in army.keys() and king_protected(pos1,(x1,y),army,army1,black,king):
+                        return False
+                    
+                    if (x1,y) in army.keys() or (x1,y) in  army1.keys()  :
+                        break                    
+
+                for x1 in range(x-1,0,-1):
+                    if (x1,y) not in army.keys() and king_protected(pos1,(x1,y),army,army1,black,king):
+                        return False
+                    
+                    if (x1,y) in army.keys() or (x1,y) in  army1.keys()  :
+                        break         
+               
+                #take the bishop sets        
+                x1=x
+                y1=y
+                while True:
+                    x1+=1
+                    y1+=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1>=8 or y1>=8:
+                        break
+
+                x1=x
+                y1=y
+                while True:
+                    x1-=1
+                    y1-=1
+                    if (x1,y1) in army.keys():
+                        break
+                    elif (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    elif (x1,y1) in army1.keys():
+                        break
+                    if x1<=8 or y1<=1:
+                        break                
+                x1=x
+                y1=y
+                while True:
+                    x1+=1
+                    y1-=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1<=8 or y1<=1:
+                        break       
+
+
+
+                x1=x
+                y1=y
+                while True:
+                    x1-=1
+                    y1+=1
+                    if (x1,y1) in army.keys():
+                        break
+                    if (x1,y1) not in army.keys() and king_protected(pos1,(x1,y1),army,army1,black,king):
+                        return False
+                    if (x1,y1) in army1.keys():
+                        break
+                    if x1<=1 or y1<=8:
+                        break       
+
+                return True        
+
                 
         else :#soljer[0:4]=='pawn'
                 x1=pos1[0]
@@ -537,9 +692,11 @@ def King_protector_allways(pos1,army,army1,black,king):
 
                     if any([
                     
-                    (x1+1,y1-1) in army1.keys() and King_protector(pos1,(x1+1,y1-1),army,army1,black,king),
-                    (x1-1,y1-1) in army1.keys()and King_protector(pos1,(x1-1,y1-1),army,army1,black,king),
-                    (x1,y1-1) not in army.keys()and King_protector(pos1,(x1,y1-1),army,army1,black,king)
+                    (x1+1,y1-1) in army1.keys() and king_protected(pos1,(x1+1,y1-1),army,army1,black,king),
+                    (x1-1,y1-1) in army1.keys()and king_protected(pos1,(x1-1,y1-1),army,army1,black,king),
+                    (x1,y1-1) not in army.keys()and king_protected(pos1,(x1,y1-1),army,army1,black,king),
+                    (x1,y1-1) not in zip(army.keys() ,army1.keys()) and (x1,y1-2)not in zip(army.keys() ,army1.keys()) and king_protected(pos1,(x1,y1-2),army,army1,black,king)
+
                             ]):
                         return False
                     else:
@@ -547,15 +704,52 @@ def King_protector_allways(pos1,army,army1,black,king):
                 else:
                     if any([
                         
-                    (x1+1,y1+1) in army1.keys()and King_protector(pos1,(x1+1,y1+1),army,army1,black,king),
-                    (x1-1,y1+1) in army1.keys()and King_protector(pos1,(x1-1,y1+1),army,army1,black,king),
-                    (x1,y1+1) not in army.keys()and King_protector(pos1,(x1,y1+1),army,army1,black,king)
+                    (x1+1,y1+1) in army1.keys()and king_protected(pos1,(x1+1,y1+1),army,army1,black,king),
+                    (x1-1,y1+1) in army1.keys()and king_protected(pos1,(x1-1,y1+1),army,army1,black,king),
+                    (x1,y1+1) not in army.keys()and king_protected(pos1,(x1,y1+1),army,army1,black,king),
+                    (x1,y1+1) not in zip(army.keys() ,army1.keys()) and (x1,y1+2)not in zip(army.keys() ,army1.keys()) and king_protected(pos1,(x1,y1+2),army,army1,black,king)
                             ]):
                         return False
  
                     else:
                         return True
         return False
+
+
+def chekmate(army1,army2,king,black):                  
+    """returns true if checkmate"""
+    for location ,soljer  in army2.items():
+        if soljer[0:4]=='rook':
+            if rook_right_move(location,king):
+                if rook_can_move(location,king,army2,army1):
+                    return True
+            
+        elif soljer[0:6]=='Bishop':    
+            if Bishop_right_move(location,king):
+                if Bishop_can_move(location,king,army2,army1):
+                    return True
+        elif soljer[0:6]=='Knight':    
+            if Knight_right_move(location,king):
+                
+                 return True
+
+        elif soljer=='Queen':    
+            if Queen_right_move(location,king):
+                if Queen_can_move(location,king,army2,army1):
+                    return True
+        elif soljer=='king':
+            if King_right_move(location,king):
+                if King_can_move(location,king,army2):
+                    return True
+        else:
+            
+            
+            if pawn_right_move(location,king,1,black):
+                    
+                    return True                
+    return False
+
+
 
 white_army={
         'pawn1':{
@@ -702,11 +896,14 @@ while True:
     pos2=None 
     if round:
         print("Black Round ")
-
+        
         while round:
+            kingpos=black_army['king']['posatios']
+            if chekmate(blackposation,whiteposation,kingpos,0):
+                print("Check Meet !!!!!!!!!!!!!!!!!")
             print("Enter The Terrier Location:")
             #chose the right solger
-            kingpos=black_army['king']['posatios']
+            
             while True:
                 try:
                     pos1=(int(input()),int(input()))
@@ -738,7 +935,7 @@ while True:
 
                             if rook_right_move(pos1,pos2):
                                 if rook_can_move(pos1,pos2,blackposation,whiteposation):
-                                    if King_protector(pos1,pos2,blackposation,whiteposation,round,kingpos):
+                                    if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
@@ -775,7 +972,7 @@ while True:
 
                             if Bishop_right_move(pos1,pos2):
                                 if Bishop_can_move(pos1,pos2,blackposation,whiteposation):
-                                    if King_protector(pos1,pos2,blackposation,whiteposation,round,kingpos):
+                                    if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
@@ -796,7 +993,7 @@ while True:
                     else:
                        print("there are no movse")
                 elif soljer[0:4]=='pawn':
-                    if pawn_ther_are_movse(pos1,1,blackposation,whiteposation) :
+                    if pawn_ther_are_movse(pos1,round,blackposation,whiteposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
                            print("This Solger Can't Be Moves 'king protector'")
                            break
@@ -813,7 +1010,7 @@ while True:
                             if pawn_right_move(pos1,pos2,movments,1):
                                 if pawn_can_move(pos1,pos2,round,blackposation,whiteposation):
                                 
-                                    if King_protector(pos1,pos2,blackposation,whiteposation,round,kingpos):
+                                    if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
                                 
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
@@ -850,7 +1047,7 @@ while True:
 
                             if Knight_right_move(pos1,pos2):
                                 
-                                    if King_protector(pos1,pos2,blackposation,whiteposation,round,kingpos):
+                                    if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
@@ -884,7 +1081,7 @@ while True:
 
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,blackposation,whiteposation):
-                                    if King_protector(pos1,pos2,blackposation,whiteposation,round,kingpos):
+                                    if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
@@ -917,7 +1114,7 @@ while True:
 
                             if King_right_move(pos1,pos2):
                                 if King_can_move(pos2,blackposation):
-                                    if king_freeToMove(pos2,blackposation,whiteposation,0):
+                                    if king_freeToMove(pos1,pos2,blackposation,whiteposation,0):
                                         black_army[blackposation[pos1]]['posatios']=pos2
                                         if pos2 in whiteposation.keys():
                                             white_army[whiteposation[pos2]]['active']=False
@@ -953,9 +1150,12 @@ while True:
     else:
         print("White Round ")   
         while not round:
+            kingpos=white_army['king']['posatios']
+            if chekmate(whiteposation,blackposation,kingpos,1):
+                print("Check Meet !!!!!!!!!!!!!!!!!")
             print("Enter The Terrier Location:")
             #chose the right solger
-            kingpos=white_army['king']['posatios']
+
             while True:
                 try:
                     pos1=(int(input()),int(input()))
@@ -985,7 +1185,7 @@ while True:
 
                             if rook_right_move(pos1,pos2):
                                 if rook_can_move(pos1,pos2,whiteposation,blackposation):
-                                    if King_protector(pos1,pos2,whiteposation,blackposation,round,kingpos):
+                                    if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
                                         white_army[whiteposation[pos1]]['posatios']=pos2
                                         if pos2 in blackposation.keys():
@@ -1021,7 +1221,7 @@ while True:
 
                             if Bishop_right_move(pos1,pos2):
                                 if Bishop_can_move(pos1,pos2,whiteposation,blackposation):
-                                    if King_protector(pos1,pos2,whiteposation,blackposation,round,kingpos):
+                                    if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
                                         white_army[whiteposation[pos1]]['posatios']=pos2
                                         if pos2 in blackposation.keys():
@@ -1057,7 +1257,7 @@ while True:
                             movments=white_army[whiteposation[pos1]]['Movements']
                             if pawn_right_move(pos1,pos2,movments,0):
                                 if pawn_can_move(pos1,pos2,0,whiteposation,blackposation):
-                                    if King_protector(pos1,pos2,whiteposation,blackposation,round,kingpos):
+                                    if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
                                         white_army[whiteposation[pos1]]['posatios']=pos2
                                         if pos2 in blackposation.keys():
@@ -1095,7 +1295,7 @@ while True:
                             
                             if Knight_right_move(pos1,pos2):
                                 
-                                    if King_protector(pos1,pos2,whiteposation,blackposation,round,kingpos):
+                                    if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
                                         white_army[whiteposation[pos1]]['posatios']=pos2
                                         if pos2 in blackposation.keys():
@@ -1127,7 +1327,7 @@ while True:
 
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,whiteposation,blackposation):
-                                    if King_protector(pos1,pos2,whiteposation,blackposation,round,kingpos):
+                                    if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
                                         white_army[whiteposation[pos1]]['posatios']=pos2
                                         if pos2 in blackposation.keys():
@@ -1161,7 +1361,7 @@ while True:
 
                         if King_right_move(pos1,pos2):
                             if King_can_move(pos2,whiteposation):
-                                if king_freeToMove(pos2,whiteposation,blackposation,1):
+                                if king_freeToMove(pos1,pos2,whiteposation,blackposation,1):
                                     white_army[whiteposation[pos1]]['posatios']=pos2
                                     if pos2 in blackposation.keys():
                                         black_army[blackposation[pos2]]['active']=False
