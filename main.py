@@ -387,26 +387,26 @@ def king_freeToMove(pos1,pos2,army,army1,black):
     
     new_key = pos2
     army2 = {new_key if k == pos1 else k: v for k, v in army.items()}  # need to study
-    for location ,soljer  in army1.items():
-        if soljer[0:4]=='rook':
+    for location ,solder  in army1.items():
+        if solder[0:4]=='rook':
             if rook_right_move(location,pos2):
                 if rook_can_move(location,pos2,army1,army):
                     return False
             
-        elif soljer[0:6]=='Bishop':    
+        elif solder[0:6]=='Bishop':    
             if Bishop_right_move(location,pos2):
                 if Bishop_can_move(location,pos2,army1,army):
                     return False
-        elif soljer[0:6]=='Knight':    
+        elif solder[0:6]=='Knight':    
             if Knight_right_move(location,pos2):
                 
                  return False
 
-        elif soljer=='Queen':    
+        elif solder=='Queen':    
             if Queen_right_move(location,pos2):
                 if Queen_can_move(location,pos2,army1,army):
                     return False
-        elif soljer=='king':
+        elif solder=='king':
             if King_right_move(location,pos2):
                 if King_can_move(location,pos2,army1):
                     return False
@@ -428,29 +428,32 @@ def king_protected(pos1,pos2,army,army1,black,king):
     army2 = {new_key if k == pos1 else k: v for k, v in army.items()}  # need to study
 
 
-    for location ,soljer  in army1.items():
-        if soljer[0:4]=='rook':
+    for location ,solder  in army1.items():
+        if solder[0:4]=='rook':
             if rook_right_move(location,king):
                 if rook_can_move(location,king,army1,army2):
                     return False
             
-        elif soljer[0:6]=='Bishop':    
+        elif solder[0:6]=='Bishop':    
             if Bishop_right_move(location,king):
-                if Bishop_can_move(location,pos2,army1,army2):
+                if Bishop_can_move(location,king,army1,army2):
                     return False
-        elif soljer[0:6]=='Knight':    
+                
+        elif solder[0:6]=='Knight':    
             if Knight_right_move(location,king):
                 
                  return False
 
-        elif soljer=='Queen':    
+        elif solder=='Queen':    
             if Queen_right_move(location,king):
                 if Queen_can_move(location,king,army1,army2):
                     return False
-        elif soljer=='king':
+                
+        elif solder=='king':
             if King_right_move(location,king):
                 if King_can_move(location,king,army2):
                     return False
+                
         else:
             
             
@@ -462,9 +465,9 @@ def King_protector_allways(pos1,army,army1,black,king):
         """returns true if all the movse of this solder maks the king unsafe"""
         x=pos1[0]
         y=pos1[1]
-        solger=army[pos1]
+        Solder=army[pos1]
 
-        if solger[0:4]=='rook':
+        if Solder[0:4]=='rook':
                
                
                 for y1 in range(y+1,9):
@@ -503,7 +506,7 @@ def King_protector_allways(pos1,army,army1,black,king):
   
                     
      
-        elif solger[0:6]=='Bishop':    
+        elif Solder[0:6]=='Bishop':    
 
                   
                 x=pos1[0]
@@ -567,7 +570,7 @@ def King_protector_allways(pos1,army,army1,black,king):
                 return True
                 
 
-        elif solger[0:6]=='Knight':    
+        elif Solder[0:6]=='Knight':    
                 x=pos1[0]
                 y=pos1[1]
 
@@ -587,7 +590,7 @@ def King_protector_allways(pos1,army,army1,black,king):
                 else:
                     return True
             
-        elif soljer=='Queen':    
+        elif Solder=='Queen':    
     
                 x=pos1[0]
                 y=pos1[1]
@@ -684,7 +687,7 @@ def King_protector_allways(pos1,army,army1,black,king):
                 return True        
 
                 
-        else :#soljer[0:4]=='pawn'
+        else :#solder[0:4]=='pawn'
                 x1=pos1[0]
                 y1=pos1[1]
 
@@ -692,10 +695,13 @@ def King_protector_allways(pos1,army,army1,black,king):
 
                     if any([
                     
-                    (x1+1,y1-1) in army1.keys() and king_protected(pos1,(x1+1,y1-1),army,army1,black,king),
-                    (x1-1,y1-1) in army1.keys()and king_protected(pos1,(x1-1,y1-1),army,army1,black,king),
-                    (x1,y1-1) not in army.keys()and king_protected(pos1,(x1,y1-1),army,army1,black,king),
-                    (x1,y1-1) not in zip(army.keys() ,army1.keys()) and (x1,y1-2)not in zip(army.keys() ,army1.keys()) and king_protected(pos1,(x1,y1-2),army,army1,black,king)
+                        (x1+1,y1-1)     in army1.keys()   and  king_protected(pos1,(x1+1,y1-1),army,army1,black,king),
+                        (x1-1,y1-1)     in army1.keys()   and  king_protected(pos1,(x1-1,y1-1),army,army1,black,king),
+                        (x1,y1-1)   not in army.keys()    and  king_protected(pos1,(x1,y1-1),army,army1,black,king),
+                        (x1,y1-1)   not in army.keys()    and
+                        (x1,y1-1)   not in army1.keys()   and 
+                        (x1,y1-2)   not in army.keys()    and
+                        (x1,y1-2)   not in army1.keys()   and  king_protected(pos1,(x1,y1-2),army,army1,black,king)
 
                             ]):
                         return False
@@ -704,10 +710,14 @@ def King_protector_allways(pos1,army,army1,black,king):
                 else:
                     if any([
                         
-                    (x1+1,y1+1) in army1.keys()and king_protected(pos1,(x1+1,y1+1),army,army1,black,king),
-                    (x1-1,y1+1) in army1.keys()and king_protected(pos1,(x1-1,y1+1),army,army1,black,king),
-                    (x1,y1+1) not in army.keys()and king_protected(pos1,(x1,y1+1),army,army1,black,king),
-                    (x1,y1+1) not in zip(army.keys() ,army1.keys()) and (x1,y1+2)not in zip(army.keys() ,army1.keys()) and king_protected(pos1,(x1,y1+2),army,army1,black,king)
+                        (x1+1,y1+1)     in army1.keys()   and  king_protected(pos1,(x1+1,y1+1),army,army1,black,king),
+                        (x1-1,y1+1)     in army1.keys()   and  king_protected(pos1,(x1-1,y1+1),army,army1,black,king),
+                        (x1,y1+1)   not in army.keys()    and  king_protected(pos1,(x1,y1+1),army,army1,black,king),
+                        (x1,y1+1)   not in army.keys()    and   
+                        (x1,y1+1)   not in army1.keys()   and 
+                        (x1,y1+2)   not in army.keys()    and   
+                        (x1,y1+1)   not in army1.keys()   and  king_protected(pos1,(x1,y1+2),army,army1,black,king)
+
                             ]):
                         return False
  
@@ -718,26 +728,26 @@ def King_protector_allways(pos1,army,army1,black,king):
 
 def chekmate(army1,army2,king,black):                  
     """returns true if checkmate"""
-    for location ,soljer  in army2.items():
-        if soljer[0:4]=='rook':
+    for location ,solder  in army2.items():
+        if solder[0:4]=='rook':
             if rook_right_move(location,king):
                 if rook_can_move(location,king,army2,army1):
                     return True
             
-        elif soljer[0:6]=='Bishop':    
+        elif solder[0:6]=='Bishop':    
             if Bishop_right_move(location,king):
                 if Bishop_can_move(location,king,army2,army1):
                     return True
-        elif soljer[0:6]=='Knight':    
+        elif solder[0:6]=='Knight':    
             if Knight_right_move(location,king):
                 
                  return True
 
-        elif soljer=='Queen':    
+        elif solder=='Queen':    
             if Queen_right_move(location,king):
                 if Queen_can_move(location,king,army2,army1):
                     return True
-        elif soljer=='king':
+        elif solder=='king':
             if King_right_move(location,king):
                 if King_can_move(location,king,army2):
                     return True
@@ -749,6 +759,39 @@ def chekmate(army1,army2,king,black):
                     return True                
     return False
 
+
+
+def king_checkmated(king,army,army1,black):
+    """Returns True If Checkmated """
+    x=king[0]
+    y=king[1]
+    black1=black
+    black= abs(black-1)
+    if any([
+        (x-1,y+1) not in army.keys() and inbord((x-1,y+1)) and king_freeToMove(pos1,(x-1,y+1),army,army1,black),
+        (x+1,y+1) not in army.keys() and inbord((x+1,y+1)) and king_freeToMove(pos1,(x+1,y+1),army,army1,black),
+        (x-1,y-1) not in army.keys() and inbord((x-1,y-1)) and king_freeToMove(pos1,(x-1,y-1),army,army1,black),
+        (x+1,y-1) not in army.keys() and inbord((x+1,y-1)) and king_freeToMove(pos1,(x+1,y-1),army,army1,black),
+        (x,y-1)   not in army.keys() and inbord((x+1,y-1)) and king_freeToMove(pos1,(x,y-1),army,army1,black),
+        (x,y+1)   not in army.keys() and inbord((x+1,y+1)) and king_freeToMove(pos1,(x,y+1),army,army1,black),
+        (x-1,y)   not in army.keys() and inbord((x-1,y))   and king_freeToMove(pos1,(x-1,y),army,army1,black),
+        (x+1,y)   not in army.keys() and inbord((x+1,y))   and king_freeToMove(pos1,(x+1,y),army,army1,black)
+             ]):
+        
+        return False
+    
+    black=black1
+    for solder in army.keys():
+        if army[solder]=="king":
+            continue
+        if King_protector_allways(solder,army,army1,black,king):
+            continue
+        else:
+            return False
+    return True
+
+  
+    
 
 
 white_army={
@@ -822,6 +865,13 @@ black_army={
 
 }
 
+def makechange(army,army1,solgers_out):
+    black_army[army[pos1]]['posatios']=pos2
+    if pos2 in army1.keys():
+        white_army[army1[pos2]]['active']=False
+        solgers_out.append(army1[pos2])    
+
+
 def is_empty(pos) ->tuple:
     status=True
     for key,value in black_army.items():
@@ -894,15 +944,22 @@ while True:
     #if black round
     pos1=None
     pos2=None 
-    if round:
+    if round ==1:
         print("Black Round ")
         
-        while round:
+        while round==1:
             kingpos=black_army['king']['posatios']
-            if chekmate(blackposation,whiteposation,kingpos,0):
-                print("Check Meet !!!!!!!!!!!!!!!!!")
+            chekmateblack=chekmate(blackposation,whiteposation,kingpos,0)
+            king_checkmatedblack=king_checkmated(kingpos,blackposation,whiteposation,round)
+            if chekmateblack and king_checkmatedblack:
+                
+                    print("------WHITE ARMY WINS------")
+                    round=3    
+                    break
+            elif chekmateblack:
+                    print("Check Meet !!!!!!!!!!!!!!!!!")
             print("Enter The Terrier Location:")
-            #chose the right solger
+            #chose the right Solder
             
             while True:
                 try:
@@ -916,12 +973,12 @@ while True:
 
 
             if pos1 in blackposation.keys():
-                soljer=blackposation[pos1]
-                if soljer[0:4]=='rook':
+                solder=blackposation[pos1]
+                if solder[0:4]=='rook':
                     
                     if rook_ther_are_movse(pos1,blackposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:
                         while True:
@@ -955,10 +1012,10 @@ while True:
 
                     else:
                         print("there are no movse")
-                elif soljer[0:6]=='Bishop':
+                elif solder[0:6]=='Bishop':
                     if Bishop_ther_are_movse(pos1,blackposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -992,10 +1049,10 @@ while True:
 
                     else:
                        print("there are no movse")
-                elif soljer[0:4]=='pawn':
+                elif solder[0:4]=='pawn':
                     if pawn_ther_are_movse(pos1,round,blackposation,whiteposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -1016,6 +1073,7 @@ while True:
                                         if pos2 in whiteposation.keys():
                                             white_army[whiteposation[pos2]]['active']=False
                                             white_out.append(whiteposation[pos2])      
+                                            movments+=1
                                         round=0                          
                                         break
                                     else:
@@ -1030,10 +1088,10 @@ while True:
                                 print("Wrong Move for The Pawn ")
                     else:
                        print("there are no movse") 
-                elif soljer[0:6]=='Knight':
+                elif solder[0:6]=='Knight':
                     if Knight_ther_are_movse(pos1,blackposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -1064,10 +1122,10 @@ while True:
                                 print("Wrong Move for The Knight ")
                     else:
                        print("there are no movse") 
-                elif soljer=='Queen':
+                elif solder=='Queen':
                     if Queen_ther_are_movse(pos1,blackposation) :
                        if King_protector_allways(pos1,blackposation,whiteposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -1082,11 +1140,11 @@ while True:
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,blackposation,whiteposation):
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
-
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])      
+                                        makechange(blackposation,whiteposation,white_out)
+                                        # black_army[blackposation[pos1]]['posatios']=pos2
+                                        # if pos2 in whiteposation.keys():
+                                        #     white_army[whiteposation[pos2]]['active']=False
+                                        #     white_out.append(whiteposation[pos2])      
                                         round=0                          
                                         break
                                     else:
@@ -1147,14 +1205,29 @@ while True:
 
 
     # if white army
-    else:
-        print("White Round ")   
-        while not round:
+    elif round ==0:
+        whiteposation=white_posation_chang(white_army)
+        blackposation=black_posation_chang(black_army)
+        print("White Round ") 
+
+        while round ==0:
             kingpos=white_army['king']['posatios']
-            if chekmate(whiteposation,blackposation,kingpos,1):
+            chekmatewhite=chekmate(whiteposation,blackposation,kingpos,1)
+            king_checkmatedwhite=king_checkmated(kingpos,whiteposation,blackposation,round)
+            if  king_checkmatedwhite and  king_checkmatedwhite:
+                
+                print("------BLACK ARMY WINS------")
+
+                round=3    
+
+                break
+                    
+            elif king_checkmatedwhite :
                 print("Check Meet !!!!!!!!!!!!!!!!!")
+                
+            print(round)
             print("Enter The Terrier Location:")
-            #chose the right solger
+            #chose the right Solder
 
             while True:
                 try:
@@ -1166,12 +1239,12 @@ while True:
                 except ValueError:
                     break 
             if pos1 in whiteposation.keys():
-                soljer=whiteposation[pos1]
-                if soljer[0:4]=='rook':
+                solder=whiteposation[pos1]
+                if solder[0:4]=='rook':
                     
                     if rook_ther_are_movse(pos1,whiteposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -1204,10 +1277,10 @@ while True:
 
                     else:
                        print("there are no movse")
-                elif soljer[0:6]=='Bishop':
+                elif solder[0:6]=='Bishop':
                     if Bishop_ther_are_movse(pos1,whiteposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
                         while True:
@@ -1240,10 +1313,10 @@ while True:
 
                     else:
                        print("there are no movse")
-                elif soljer[0:4]=='pawn':
+                elif solder[0:4]=='pawn':
                     if pawn_ther_are_movse(pos1,0,whiteposation,blackposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                            
                         while True:
@@ -1278,10 +1351,10 @@ while True:
                                 print("Wrong Move for The Pawn ")
                     else:
                        print("there are no movse") 
-                elif soljer[0:6]=='Knight':
+                elif solder[0:6]=='Knight':
                     if Knight_ther_are_movse(pos1,whiteposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                            
                         while True:
@@ -1310,10 +1383,10 @@ while True:
                                 print("Wrong Move for The Knight ")
                     else:
                        print("there are no movse") 
-                elif soljer=='Queen':
+                elif solder=='Queen':
                     if Queen_ther_are_movse(pos1,whiteposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
-                           print("This Solger Can't Be Moves 'king protector'")
+                           print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                            
                         while True:
@@ -1377,12 +1450,14 @@ while True:
                             print("Wrong Move for The king ")
             elif pos1 in blackposation.keys():
                 print("You cannot move black pieces")
-            elif pos1 not in zip(white_army.keys(),black_army.keys()) and pos1 !=None:
+            elif pos1 not in white_army.keys() and pos1 not in black_army.keys() and pos1 !=None:
                 print("There Is No Pieces In This Place ")
                
             else:
                 break
-          
+
+    else:
+        break    
     
     
 
