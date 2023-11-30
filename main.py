@@ -886,6 +886,16 @@ def makechange(army,army1,solgers_out,black):
             black_army[army1[pos2]]['active']=False
             solgers_out.append(army1[pos2])            
 
+def rightPosSynt():
+    try:
+        pos2=(int(input()),int(input()))
+        if inbord(pos2):
+
+            return pos2
+        else:
+            print("The location Out The Borde,try again")
+    except ValueError:
+        False
 
 def is_empty(pos) ->tuple:
     status=True
@@ -996,14 +1006,16 @@ while True:
                            print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:
+                        
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if rook_right_move(pos1,pos2):
                                 if rook_can_move(pos1,pos2,blackposation,whiteposation):
@@ -1031,14 +1043,15 @@ while True:
                            break
                        else:                       
                         while True:
-                            print("Enter The New  Location ")
+                            
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
-
+                            if pos2== pos1:
+                                break       
                             if Bishop_right_move(pos1,pos2):
                                 if Bishop_can_move(pos1,pos2,blackposation,whiteposation):
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
@@ -1064,14 +1077,18 @@ while True:
                            print("This Solder Can't Be Moves 'king protector'")
                            break
                        else:                       
+
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                            
+                                break     
+
                             movments=black_army[blackposation[pos1]]['Movements']
                             if pawn_right_move(pos1,pos2,movments,1):
                                 if pawn_can_move(pos1,pos2,round,blackposation,whiteposation):
@@ -1101,13 +1118,14 @@ while True:
                            break
                        else:                       
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if Knight_right_move(pos1,pos2):
                                 
@@ -1132,13 +1150,14 @@ while True:
                            break
                        else:                       
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,blackposation,whiteposation):
@@ -1162,13 +1181,14 @@ while True:
                     if King_ther_are_movse(pos1,blackposation) :
              
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if King_right_move(pos1,pos2):
                                 if King_can_move(pos2,blackposation):
@@ -1246,13 +1266,14 @@ while True:
                            break
                        else:                       
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if rook_right_move(pos1,pos2):
                                 if rook_can_move(pos1,pos2,whiteposation,blackposation):
@@ -1279,13 +1300,14 @@ while True:
                            break
                        else:                       
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if Bishop_right_move(pos1,pos2):
                                 if Bishop_can_move(pos1,pos2,whiteposation,blackposation):
@@ -1312,13 +1334,15 @@ while True:
                            break
                        else:                            
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
+
                             movments=white_army[whiteposation[pos1]]['Movements']
                             if pawn_right_move(pos1,pos2,movments,0):
                                 if pawn_can_move(pos1,pos2,0,whiteposation,blackposation):
@@ -1340,6 +1364,7 @@ while True:
                                 print("Wrong Move for The Pawn ")
                     else:
                        print("there are no movse") 
+
                 elif solder[0:6]=='Knight':
                     if Knight_ther_are_movse(pos1,whiteposation) :
                        if King_protector_allways(pos1,whiteposation,blackposation,round,kingpos):
@@ -1347,13 +1372,14 @@ while True:
                            break
                        else:                            
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
                             
                             if Knight_right_move(pos1,pos2):
                                 
@@ -1376,13 +1402,14 @@ while True:
                            break
                        else:                            
                         while True:
-                            print("Enter The New  Location ")
+                            
                             while True:
-                                pos2=(int(input()),int(input()))
-                                if inbord(pos2):
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
                                     break
-                                else:
-                                    print("The location Out The Borde,try again")
+                            if pos2== pos1:
+                                break     
 
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,whiteposation,blackposation):
@@ -1406,14 +1433,15 @@ while True:
                 else:
                     if King_ther_are_movse(pos1,whiteposation) :
                        
-                       while True:
-                        print("Enter The New  Location ")
                         while True:
-                            pos2=(int(input()),int(input()))
-                            if inbord(pos2):
-                                break
-                            else:
-                                print("The location Out The Borde,try again")
+                            
+                            while True:
+                                print("Enter The New  Location ")
+                                pos2=rightPosSynt()
+                                if type(pos2)==tuple:
+                                    break
+                            if pos2== pos1:
+                                break     
 
                         if King_right_move(pos1,pos2):
                             if King_can_move(pos2,whiteposation):
