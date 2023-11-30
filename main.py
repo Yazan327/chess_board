@@ -71,6 +71,7 @@ def Bishop_right_move(pos1,pos2) ->tuple:
     x2=pos2[0]
     y2=pos2[1]
     return any([x1-y1==x2-y2,x1+y1==x2+y2])
+
 def Bishop_can_move(pos1,pos2,army,army1):
     x1=pos1[0]
     y1=pos1[1]
@@ -381,21 +382,26 @@ def King_can_move(pos2,army):
     else:
         return True
 
-def king_freeToMove(pos1,pos2,army,army1,black):
+def  king_freeToMove(pos1,pos2,army,army1,black):
     """returns true if the king free to move"""
-    army2=army
+    army_=army
     
     new_key = pos2
-    army2 = {new_key if k == pos1 else k: v for k, v in army.items()}  # need to study
-    for location ,solder  in army1.items():
+    army_ = {new_key if k == pos1 else k: v for k, v in army.items()}  # need to study
+    army1_= { k: v for k, v in army1.items()} 
+    if pos2 in army1_.keys():
+            del army1_[pos2]
+
+    for location ,solder  in army1_.items():
+
         if solder[0:4]=='rook':
             if rook_right_move(location,pos2):
-                if rook_can_move(location,pos2,army1,army):
+                if rook_can_move(location,pos2,army1_,army_):
                     return False
             
         elif solder[0:6]=='Bishop':    
             if Bishop_right_move(location,pos2):
-                if Bishop_can_move(location,pos2,army1,army):
+                if Bishop_can_move(location,pos2,army1_,army_):
                     return False
         elif solder[0:6]=='Knight':    
             if Knight_right_move(location,pos2):
@@ -404,16 +410,16 @@ def king_freeToMove(pos1,pos2,army,army1,black):
 
         elif solder=='Queen':    
             if Queen_right_move(location,pos2):
-                if Queen_can_move(location,pos2,army1,army):
+                if Queen_can_move(location,pos2,army1_,army_):
                     return False
         elif solder=='king':
             if King_right_move(location,pos2):
-                if King_can_move(location,pos2,army1):
+                if King_can_move(location,pos2,army1_):
                     return False
         else:
             
            
-            if pawn_can_move(location,pos2,black,army1,army2):
+            if pawn_can_move(location,pos2,black,army1_,army_):
                     
                         return False                   
     return True
@@ -865,11 +871,20 @@ black_army={
 
 }
 
-def makechange(army,army1,solgers_out):
-    black_army[army[pos1]]['posatios']=pos2
-    if pos2 in army1.keys():
-        white_army[army1[pos2]]['active']=False
-        solgers_out.append(army1[pos2])    
+def makechange(army,army1,solgers_out,black):
+    """ To Make Changes After Every Move"""
+    if black:
+        black_army[army[pos1]]['posatios']=pos2
+        black_army[army[pos1]]['Movements']+=1
+        if pos2 in army1.keys():
+            white_army[army1[pos2]]['active']=False
+            solgers_out.append(army1[pos2])   
+    else:
+        white_army[army[pos1]]['posatios']=pos2
+        white_army[army[pos1]]['Movements']+=1
+        if pos2 in army1.keys():
+            black_army[army1[pos2]]['active']=False
+            solgers_out.append(army1[pos2])            
 
 
 def is_empty(pos) ->tuple:
@@ -994,10 +1009,7 @@ while True:
                                 if rook_can_move(pos1,pos2,blackposation,whiteposation):
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])      
+                                        makechange(blackposation,whiteposation,white_out,round)   
                                         round=0                          
                                         break
                                     else:
@@ -1031,10 +1043,7 @@ while True:
                                 if Bishop_can_move(pos1,pos2,blackposation,whiteposation):
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])      
+                                        makechange(blackposation,whiteposation,white_out,round)      
                                         round=0                          
                                         break
                                     else:
@@ -1069,11 +1078,8 @@ while True:
                                 
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
                                 
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])      
-                                            movments+=1
+                                        makechange(blackposation,whiteposation,white_out,round)      
+                                            
                                         round=0                          
                                         break
                                     else:
@@ -1107,10 +1113,7 @@ while True:
                                 
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
 
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])      
+                                        makechange(blackposation,whiteposation,white_out,round)      
                                         round=0                          
                                         break
                                     else:
@@ -1140,11 +1143,8 @@ while True:
                             if Queen_right_move(pos1,pos2):
                                 if Queen_can_move(pos1,pos2,blackposation,whiteposation):
                                     if king_protected(pos1,pos2,blackposation,whiteposation,round,kingpos):
-                                        makechange(blackposation,whiteposation,white_out)
-                                        # black_army[blackposation[pos1]]['posatios']=pos2
-                                        # if pos2 in whiteposation.keys():
-                                        #     white_army[whiteposation[pos2]]['active']=False
-                                        #     white_out.append(whiteposation[pos2])      
+                                        makechange(blackposation,whiteposation,white_out,round)
+     
                                         round=0                          
                                         break
                                     else:
@@ -1173,10 +1173,8 @@ while True:
                             if King_right_move(pos1,pos2):
                                 if King_can_move(pos2,blackposation):
                                     if king_freeToMove(pos1,pos2,blackposation,whiteposation,0):
-                                        black_army[blackposation[pos1]]['posatios']=pos2
-                                        if pos2 in whiteposation.keys():
-                                            white_army[whiteposation[pos2]]['active']=False
-                                            white_out.append(whiteposation[pos2])
+
+                                        makechange(blackposation,whiteposation,white_out,round)
                                         round=0
                                         break
                                     else:
@@ -1225,7 +1223,7 @@ while True:
             elif king_checkmatedwhite :
                 print("Check Meet !!!!!!!!!!!!!!!!!")
                 
-            print(round)
+           
             print("Enter The Terrier Location:")
             #chose the right Solder
 
@@ -1260,10 +1258,7 @@ while True:
                                 if rook_can_move(pos1,pos2,whiteposation,blackposation):
                                     if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
-                                        white_army[whiteposation[pos1]]['posatios']=pos2
-                                        if pos2 in blackposation.keys():
-                                            black_army[blackposation[pos2]]['active']=False
-                                            black_out.append(blackposation[pos2])      
+                                        makechange(whiteposation,blackposation,black_out,round)      
                                         round=1                        
                                         break
                                     else:
@@ -1296,10 +1291,7 @@ while True:
                                 if Bishop_can_move(pos1,pos2,whiteposation,blackposation):
                                     if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
-                                        white_army[whiteposation[pos1]]['posatios']=pos2
-                                        if pos2 in blackposation.keys():
-                                            black_army[blackposation[pos2]]['active']=False
-                                            black_out.append(blackposation[pos2])      
+                                        makechange(whiteposation,blackposation,black_out,round)       
                                         round=1                        
                                         break
                                     else:
@@ -1332,10 +1324,7 @@ while True:
                                 if pawn_can_move(pos1,pos2,0,whiteposation,blackposation):
                                     if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
-                                        white_army[whiteposation[pos1]]['posatios']=pos2
-                                        if pos2 in blackposation.keys():
-                                            black_army[blackposation[pos2]]['active']=False
-                                            black_out.append(blackposation[pos2])      
+                                        makechange(whiteposation,blackposation,black_out,round)       
                                         round=1                        
                                         break
                                     else:
@@ -1370,10 +1359,7 @@ while True:
                                 
                                     if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
-                                        white_army[whiteposation[pos1]]['posatios']=pos2
-                                        if pos2 in blackposation.keys():
-                                            black_army[blackposation[pos2]]['active']=False
-                                            black_out.append(blackposation[pos2])      
+                                        makechange(whiteposation,blackposation,black_out,round)       
                                         round=1                        
                                         break
                                     else:
@@ -1402,10 +1388,7 @@ while True:
                                 if Queen_can_move(pos1,pos2,whiteposation,blackposation):
                                     if king_protected(pos1,pos2,whiteposation,blackposation,round,kingpos):
 
-                                        white_army[whiteposation[pos1]]['posatios']=pos2
-                                        if pos2 in blackposation.keys():
-                                            black_army[blackposation[pos2]]['active']=False
-                                            black_out.append(blackposation[pos2])      
+                                        makechange(whiteposation,blackposation,black_out,round)      
                                         round=1                        
                                         break
                                     else:
@@ -1435,10 +1418,7 @@ while True:
                         if King_right_move(pos1,pos2):
                             if King_can_move(pos2,whiteposation):
                                 if king_freeToMove(pos1,pos2,whiteposation,blackposation,1):
-                                    white_army[whiteposation[pos1]]['posatios']=pos2
-                                    if pos2 in blackposation.keys():
-                                        black_army[blackposation[pos2]]['active']=False
-                                        black_out.append(blackposation[pos2])
+                                    makechange(whiteposation,blackposation,black_out,round) 
                                     round=1
                                     break
                                 else:
